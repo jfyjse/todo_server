@@ -3,6 +3,8 @@ const app= exprss()
 const session = require('express-session')
 const dataser= require('./service/data.service')
 const cors= require('cors')
+const db = require('./service/db')
+const { json } = require('express')
 
 app.use(cors({
     origin: "http://localhost:4200",
@@ -29,26 +31,43 @@ app.use(session(
        
         dataser.add(req.body.idd,req.body.data,req.body.order,req.body.doneStatus)
         .then(result=>{res.status(result.statusCode).json(result)
-        })
-        
-        
-
-        
+        })        
     })
 
 app.get('/getdata',(req,res)=>{
     dataser.getData().then(result =>{
-        // console.log(result);
-        // let data = result;
+       
         res.json({
             result
         })
-        // res.status(result.statusCode).json(result)
+       
     })
 })
 
+app.get('/update/:id',(req,res) =>{
+    _id=req.params.id;
+    db.Todo.findByIdAndUpdate(_id,{doneStatus:true}).then(dat =>{
+        res.json({dat})
+    })
+})
+
+app.delete('/delete/:id',(req,res)=>{
+    _id=req.params.id;
+    db.Todo.findByIdAndDelete(_id).then(dat =>{
+        res.json({dat})
+    })
+})
+
+app.listen(8000,()=>{
+    console.log("started listening");
+    
+})
+
+
+// console.log(result);
+
 // app.get('/getdata',(req,res) => {
-//     res.json({
+    //     res.json({
 //         "status":200,
         
 //     })
@@ -56,7 +75,16 @@ app.get('/getdata',(req,res)=>{
 
 
 
-app.listen(8000,()=>{
-    console.log("started listening");
+// app.get('/update/:id',(req,res)=>{
+//   db.Todo.find({"_id":req.params.id}).then(ress =>{
+//  var data = ress;
+//     // res.json({
+//     //       ress
+//     //   })
+//     // res.send(ress);
+//     console.log(data);
     
-})
+// });
+
+
+// })
